@@ -1,0 +1,194 @@
+﻿@using CCM.Volunteer.ApprovalProcess.Core.Models;
+@using CCM.Volunteer.ApprovalProcess.Core.ViewModels;
+@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<ApproveVolunteersViewModel>
+@{
+    Layout = "Views/Shared/_LayoutPage.cshtml";
+}
+
+
+<div class="row">
+    @Html.Partial("Views/Shared/_Profile.cshtml", new RedFlagViewModel { VolunteerInfo = Model.VolunteerInfo, RedFlagNotes = Model.RedFlagNotes, VolunteerApplication = Model.VolunteerApplication })
+
+    <!-- Background Checks -->
+    <div class="col-md-4 col-lg-6">
+        <div class="well backgroundCheck">
+            <h2>Background Check</h2>
+
+            @if (Model.VolunteerApplication.Background_Status.HasValue)
+            {
+
+                @switch (Model.VolunteerApplication.Background_Status)
+                {
+                    case 1:
+                        <h4 class="approveBlock">Pass</h4>
+                        break;
+
+                    case 2:
+                    <h4 class="problemBlock">Fail</h4>
+                        break;
+
+                    case 3:
+                    <h4 class="holdBlock">Issue</h4>
+                        break;
+
+                    case 4:
+                    <h4 class="infoBlock">Not Done Yet</h4>
+                        break;
+
+                    default:
+                    <h4 class="infoBlock">Not Done Yet</h4>
+                        break;
+                }
+                @if (Model.VolunteerApplication.Background_Status != 4)
+                {
+                    <dl class="dl-horizontal">
+
+
+                        @if (Model.VolunteerApplication.Background_Complete_Date.HasValue)
+                        {
+                            <dt>Date</dt>
+                            <dd>@Model.VolunteerApplication.Background_Complete_Date.Value.ToString("M'/'d'/'yyyy") (<span class="timeago" title="@(Model.VolunteerApplication.Background_Complete_Date.Value.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"))"></span>)</dd>
+                            <dt>Type</dt>
+                            @if (Model.VolunteerApplication.Background_Type == 1)
+                            {
+                                <dd>County</dd>
+                            }
+                            else if (Model.VolunteerApplication.Background_Type == 2)
+                            {
+                                <dd>
+                                    Protect My Ministry
+                                </dd>
+                            }
+                            else
+                            {
+                                <dd>
+                                    No background data available
+                                </dd>
+                            }
+                        }
+
+
+
+                        <dt>Notes</dt>
+                        <dd>@(Html.Raw(Model.VolunteerApplication.Background_Notes))</dd>
+                    </dl>
+                }
+                else
+                {
+                    <dt>Notes</dt>
+                    <dd><em>No notes available</em></dd>
+                }
+            }
+            else
+            {
+                <h4 class="infoBlock">Not Done Yet</h4>
+                <dl class="dl-horizontal">
+                    <dt>Type</dt>
+                    <dd><em>No background data available</em></dd>
+
+                    <dt>Notes</dt>
+                    <dd><em>No notes available</em></dd>
+                </dl>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Red Flag Notes -->
+@Html.Partial("Views/Shared/_RedFlagNotes.cshtml", new RedFlagViewModel { VolunteerInfo = Model.VolunteerInfo, RedFlagNotes = Model.RedFlagNotes, VolunteerApplication = Model.VolunteerApplication })
+
+<!-- References -->
+@Html.Partial("Views/Shared/_ReferenceChecks.cshtml", new RedFlagViewModel { VolunteerInfo = Model.VolunteerInfo, RedFlagNotes = Model.RedFlagNotes, VolunteerApplication = Model.VolunteerApplication })
+
+<!-- Approve Volunteer Notes-->
+<div class="well">
+    <h2>Approve Volunteer</h2>
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="success-message" class="bs-callout bs-callout-success" style="display:none;"><p>Your entry has been submitted successfully</p></div>
+            <div id="error-message" class="bs-callout bs-callout-danger" style="display:none;"><p>An error has occurred. Contact Tech Support if this continues.</p></div>
+            <div class="bs-callout bs-callout-loading loading" style="display: none;">Uploading your entry.</div>
+            <form id="form" role="form" action="/approve-deny/@(Model.VolunteerApplication.Ministry_Questionaire_ID)" method="post">
+                <div class="form-group">
+                    <label>Select a status</label><br />
+                    <!-- List of statuses-->
+                    <select class="form-control" id="selectList" name="statusid">
+                        @foreach (var item in Model.CurrentVolunteerStatuses)
+                        {
+                            switch (item.MQ_Status_ID)
+                            {
+                                case 1:
+                                    <option id="@item.MQ_Status_ID" value="@item.MQ_Status_ID" data-content="<i class='glyphicon glyphicon-ok'></i>@item.MQ_Status" >@item.MQ_Status</option>
+                                    break;
+
+                                case 2:
+                                <option data-divider="true"></option>
+                                <option id="@item.MQ_Status_ID" value="@item.MQ_Status_ID" data-content="<i class='glyphicon glyphicon-question-sign'></i>@item.MQ_Status" >@item.MQ_Status</option>
+                                    break;
+
+                                case 3:
+                                <option data-divider="true"></option>
+                                <option id="@item.MQ_Status_ID" value="@item.MQ_Status_ID" data-content="<i class='glyphicon glyphicon-remove'></i>@item.MQ_Status" >@item.MQ_Status</option>
+                                    break;
+
+                                case 4:
+                                <option data-divider="true"></option>
+                                <option id="@item.MQ_Status_ID" value="@item.MQ_Status_ID" data-content="<i class='glyphicon glyphicon-refresh'></i>@item.MQ_Status" >@item.MQ_Status</option>
+                                    break;
+
+                                case 5:
+                                <option data-divider="true"></option>
+                                <option id="@item.MQ_Status_ID" value="@item.MQ_Status_ID" data-content="<i class='glyphicon glyphicon-ban-circle'></i>@item.MQ_Status" >@item.MQ_Status</option>
+                                    break;
+
+                                case 6:
+                                <option data-divider="true"></option>
+                                <option id="@item.MQ_Status_ID" value="@item.MQ_Status_ID" data-content="<i class='glyphicon glyphicon-list-alt'></i>@item.MQ_Status" >@item.MQ_Status</option>
+                                    break;
+
+                                case 7:
+                                <option data-divider="true"></option>
+                                <option id="@item.MQ_Status_ID" value="@item.MQ_Status_ID" data-content="<i class='glyphicon glyphicon-pencil'></i>@item.MQ_Status" >@item.MQ_Status</option>
+                                    break;
+
+                                case 8:
+                                <option data-divider="true"></option>
+                                <option id="@item.MQ_Status_ID" value="@item.MQ_Status_ID" data-content="<i class='glyphicon glyphicon-exclamation-sign'></i>@item.MQ_Status" >@item.MQ_Status</option>
+                                <option data-divider="true"></option>
+                                    break;
+                                default:
+                                <option id="@item.MQ_Status_ID" value="@item.MQ_Status_ID" data-content="<i class='glyphicon glyphicon-exclamation-sign'></i>@item.MQ_Status" >@item.MQ_Status</option>
+                                    break;
+                            }
+                        }
+                    </select>
+                    <div id="followUpDate" style="display:none;">
+                        <label>Date:</label><br />
+                        <input type="text" name="followupdate" id="followupdate" class="datepicker form-control">
+                    </div>
+                </div>
+                <div class="form-group" id="reasons" style="display:none;">
+                    <label>Select a Reason</label><br />
+                    <!-- List of reasons -->
+                    <select class="form-control" id="reasonList" name="statusidreason">
+                        @foreach (var item in Model.CurrentVolunteerStatusReasons)
+                        {
+                            <option id="@item.MQ_Status_Reason_ID" value="@item.MQ_Status_Reason_ID">@item.MQ_Status_Reason</option>
+
+                        }
+                    </select>
+
+                </div>
+                <!-- Notes -->
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea class="form-control" rows="3" name="notes"></textarea>
+                </div>
+                <button id="submitbutton" type="submit" class="btn btn-lg btn-melbourneBlue">Submit</button>
+            </form>
+
+
+
+        </div>
+    </div>
+</div>

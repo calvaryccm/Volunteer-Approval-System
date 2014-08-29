@@ -1,0 +1,99 @@
+﻿@using CCM.Volunteer.ApprovalProcess.Core.Models;
+@using CCM.Volunteer.ApprovalProcess.Core.ViewModels;
+@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<ReferenceCheckViewModel>
+@{
+    Layout = "Views/Shared/_LayoutPage.cshtml";
+}
+
+<div class="well">
+    <h2>Reference Check</h2>
+    @if(@Model.Reference.Date_Completed != null){
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div  class="bs-callout bs-callout-info">
+                    <h2>Hmmm...</h2>
+                    It looks like you have already filled out a reference check for @Model.VolunteerInfo.Nickname @Model.VolunteerInfo.Last_Name.  Thank you for your support!<br /><br />
+                    If you have questions or comments, please send an email to <a href="mailto:volunteer@calvaryccm.com">volunteer@calvaryccm.com</a>.
+                </div>
+            </div>
+        </div>
+    }
+
+
+    else{
+        <div class="row">
+            <div class="col-lg-6">
+                <div id="success-message" class="bs-callout bs-callout-success" style="display:none;">
+                    <h2>Thank You</h2>
+                    We really want to thank you for helping us with this reference check!  By completing this form you will help us ensure that we are getting
+                    the very best people to serve in our Church!<br /><br />
+                    If you have questions or comments, please send an email to <a href="mailto:volunteer@calvaryccm.com">volunteer@calvaryccm.com</a>.
+                </div>
+
+                <div id="error-message" class="bs-callout bs-callout-danger" style="display:none;"><p>An error has occurred. <a href="http://www.calvaryccm.com/contact-us?mode=ts">Contact tech support</a> if this continues.</p></div>
+                <div class="bs-callout bs-callout-loading loading" style="display: none;">Uploading your entry.</div>
+
+                <form id="referenceCheckForm" name="referenceCheckForm" role="form" action="/reference-check" method="post">
+
+                    <div class="form-group">
+                        <label>How well do you know @Model.VolunteerInfo.Nickname @Model.VolunteerInfo.Last_Name?</label>
+                        <select class="form-control required" id="howwelldoyouknow" name="howwelldoyouknow">
+                            <option id="0" value=""> -- Choose an Option --</option>
+                            <option value="Just an acquaintance - don't know well enough to recommend">Just an acquaintance - don't know well enough to recommend</option>
+                            <option value="Casual Knowledge">Casual Knowledge</option>
+                            <option value="Know from work">Know from work</option>
+                            <option value="Know personally">Know personally</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Would you recommend @Model.VolunteerInfo.Nickname @Model.VolunteerInfo.Last_Name as a volunteer?</label>
+                        <select class="form-control required" id="wouldyourecommend" name="wouldyourecommend">
+                            <option id="0" value=""> -- Choose an Option --</option>
+                            <option value="NO - Don't know well enough to be a reference">NO - Don't know well enough to be a reference</option>
+                            <option value="NO - There might be some issues, would not recommend">NO - There might be some issues, would not recommend</option>
+                            <option value="YES - Would be fine">YES - Would be fine</option>
+                            <option value="YES ABSOLUTELY - Strongly recommend with no reservations">YES ABSOLUTELY - Strongly recommend with no reservations</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Would you trust @Model.VolunteerInfo.Nickname @Model.VolunteerInfo.Last_Name to work with children?</label>
+                        <select class="form-control required" id="trustwithchildren" name="trustwithchildren">
+                            <option id="0" value=""> -- Choose an Option --</option>
+                            <option id="1" value="Yes">Yes</option>
+                            <option id="2" value="No">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Is there anything else you think we should know about @Model.VolunteerInfo.Nickname?</label>
+                        <textarea class="form-control" id="notes" rows="3" name="notes"></textarea>
+                    </div>
+                    <input id="submitbutton" type="submit" name="submit" value="Submit" class="btn btn-lg btn-melbourneBlue" />
+                </form>
+
+
+
+            </div>
+            <!-- Get user picture -->
+
+            <div class="col-lg-6">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h3>Hello! I'm @Model.VolunteerInfo.Nickname @Model.VolunteerInfo.Last_Name and I want to serve at Calvary Chapel Melbourne.</h3>
+
+                        <p>
+                            Thank you for filling out this form! It will help us find the perfect place for @Model.VolunteerInfo.Nickname to serve! <br /><br />
+                            If you have questions or comments, please send an email to <a href="mailto:volunteer@calvaryccm.com">volunteer@calvaryccm.com</a>.
+                        </p>
+                    </div>
+                    <div class="col-lg-4">
+                        <img src="@Model.VolunteerInfo.DefaultImageUrl" alt="" class="img-thumbnail img-responsive">
+                        <p>&nbsp;</p>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+</div>

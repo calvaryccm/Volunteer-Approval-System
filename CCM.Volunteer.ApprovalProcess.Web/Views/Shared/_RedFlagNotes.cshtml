@@ -1,0 +1,124 @@
+﻿@using CCM.Volunteer.ApprovalProcess.Core.Models;
+@using CCM.Volunteer.ApprovalProcess.Core.ViewModels;
+@using System.Linq;
+@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<RedFlagViewModel>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="well">
+            <h2>Red Flag Notes</h2>
+            <div class="row redFlagNotes">
+
+                @if (Model.RedFlagNotes != null){
+
+                    @if (Model.RedFlagNotes.Count() < 1)
+                    {
+                        <div class="panel panel-default">
+                            <p><em class="notesShift">No one has voted yet... </em></p>
+                        </div>
+                    }
+                    
+                    @foreach (var item in Model.RedFlagNotes)
+                    {
+                        if (item.Details.MPRouter_Item_Status_ID == 1)
+                        {
+                            <div id="redflag_@(item.Approver.Contact_ID)" class="panel panel-default">
+                                <div class="offer offer-success">
+                                    <div class="shape">
+                                        <div class="shape-text">
+                                            <span class="glyphicon glyphicon-ok"></span>
+                                        </div>
+                                    </div>
+                                    <div class="offer-content">
+                                        <h3 class="lead">
+                                            <img data-original="@(item.Approver.DefaultImageUrl + "?w=50&h=50")" class="pull-left lazy" width="50" height="50" /> @item.Approver.Nickname @item.Approver.Last_Name
+                                            <div class="small lead">Responded <span class="timeago" title="@(item.Details.Start_Date.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"))"></span></div>
+                                        </h3>
+                                        <p>
+                                            @if (string.IsNullOrEmpty (item.Details.Notes))
+                                            {
+                                                
+                                                <em><small>No comment</small></em>
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw(item.Details.Notes)
+                                            }
+
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else if (item.Details.MPRouter_Item_Status_ID == 2)
+                        {
+                            <div id="redflag_@(item.Approver.Contact_ID)" class="panel panel-default">
+                                <div class="offer offer-warning">
+                                    <div class="shape">
+                                        <div class="shape-text">
+                                            <span class="glyphicon glyphicon-question-sign"></span>
+                                        </div>
+                                    </div>
+                                    <div class="offer-content">
+                                        <h3 class="lead">
+                                            <img src="https://images.calvaryccm.com/mp/image/contacts/@(item.Approver.Contact_ID).png?w=50&h=50" class="pull-left" /> @item.Approver.Nickname @item.Approver.Last_Name
+                                            <div class="small lead">Responded <span class="timeago" title="@(item.Details.Start_Date.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"))"></span></div>
+                                        </h3>
+                                        <p>
+                                            @if (@item.Details.Notes != null)
+                                            {
+                                                @Html.Raw(item.Details.Notes)
+                                            }
+                                            else
+                                            {
+                                                <em><small>No comment</small></em>
+                                            }
+
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+                        else if (item.Details.MPRouter_Item_Status_ID == 3)
+                        {
+                            <div id="redflag_@(item.Approver.Contact_ID)" class="panel panel-default">
+                                <div class="offer offer-danger">
+                                    <div class="shape">
+                                        <div class="shape-text">
+                                            <span class="glyphicon glyphicon-remove"></span>
+                                        </div>
+                                    </div>
+                                    <div class="offer-content">
+                                        <h3 class="lead">
+                                            <img src="https://images.calvaryccm.com/mp/image/contacts/@(item.Approver.Contact_ID).png?w=50&h=50" class="pull-left" /> @item.Approver.Nickname @item.Approver.Last_Name
+                                            <div class="small lead">Responded <span class="timeago" title="@(item.Details.Start_Date.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"))"></span></div>
+                                        </h3>
+                                        <p>
+                                            @if (@item.Details.Notes != null)
+                                            {
+                                                @item.Details.Notes
+                                            }
+                                            else
+                                            {
+                                                <em><small>No comment</small></em>
+                                            }
+
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    }
+                }
+                else
+                {
+                    <div class="panel panel-default">
+                        <p><em>No one has voted yet... </em></p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

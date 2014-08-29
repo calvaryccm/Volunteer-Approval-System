@@ -1,0 +1,148 @@
+﻿@using CCM.Volunteer.ApprovalProcess.Core.Models;
+@using CCM.Volunteer.ApprovalProcess.Core.ViewModels;
+@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<PlaceVolunteerViewModel>
+@{
+    Layout = "Views/Shared/_LayoutPage.cshtml";
+}
+
+
+<div class="row">
+    <!-- Place in ministry -->
+    <div class="col-md-4 col-lg-6">
+        <div class="well">
+            <h2>Place in Ministry</h2>
+            <h3>@Model.Ministry.Program_Name</h3>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="success-message" class="bs-callout bs-callout-success" style="display:none;"><p>Your entry has been submitted successfully</p></div>
+                    <div id="error-message" class="bs-callout bs-callout-danger" style="display:none;"><p>An error has occurred. Contact Tech Support if this continues.</p></div>
+                    <div class="bs-callout bs-callout-loading loading" style="display: none;">Uploading your entry.</div>
+                    <form id="form" role="form" method="post">
+                        <div class="form-group">
+                            <label>Select a team</label><br />
+                            <!-- List of reasons -->
+                            <select class="form-control" id="placeInMinistry" name="ministryteamid">
+                                @foreach (var item in Model.MinistryTeams)
+                                {
+
+                                    <option id="@item.Group_ID" value="@item.Group_ID">@item.Group_Name</option>
+                                    <option data-divider="true"></option>
+                                }
+                            </select>
+                        </div>
+                        <!-- Notes -->
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea class="form-control" rows="3" name="notes"></textarea>
+                        </div>
+                        <button id="submitbutton" type="submit" class="btn btn-lg btn-melbourneBlue">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile -->
+    <div class="col-md-8 col-lg-6">
+        <div class="well profile">
+            <div class="col-xs-12 col-sm-8">
+                <h2>@Model.VolunteerInfo.Nickname @Model.VolunteerInfo.Last_Name</h2>
+                <p><strong>Date applied to serve: </strong> @Model.VolunteerApplication.Start_Date.ToString("MM/yyyy") (<span class="timeago" title="@(Model.VolunteerApplication.Start_Date.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"))"></span>)</p>
+                <!-- Check for volunteer phone number -->
+                @if (Model.VolunteerInfo.Mobile_Phone != null)
+                {
+                    <p><strong>Mobile phone number:</strong> <a href="tel:@Model.VolunteerInfo.Mobile_Phone">@string.Format("{0:(###) ###-####}", long.Parse(Model.VolunteerInfo.Mobile_Phone.Replace("-", "")))</a></p>
+                }
+                else
+                {
+                    <p><strong>Mobile phone number: </strong> <em>No phone number on file</em> </p>
+                }
+
+                <!-- Check for volunteer email address -->
+                @if (Model.VolunteerInfo.Email_Address != null)
+                {
+                    <p><strong>Email address:</strong> <a href="mailto:@Model.VolunteerInfo.Email_Address">@Model.VolunteerInfo.Email_Address</a>  </p>
+                }
+                else
+                {
+                    <p><strong>Email address: </strong> <em>No email address on file</em> </p>
+                }
+
+                <p>
+                    <strong>Campus: </strong>
+                    @switch (@Model.VolunteerApplication.Volunteer_Campus)
+                    {
+                        case 5:
+                            <span class="tags melbourne">Melbourne Campus</span>;
+                            break;
+
+                        case 6:
+                        <span class="tags viera">Viera Campus</span>;
+                        break;
+
+                        case 7:
+                        <span class="tags sebastian">Sebastian Campus</span>;
+                        break;
+
+                        default:
+                        <span class="tags default">Churchwide</span>;
+                        break;
+                    }
+                </p>
+            </div>
+            <div class="col-xs-12 col-sm-4 text-center">
+                <figure>
+                    <img src="https://images.calvaryccm.com/mp/image/contacts/@(Model.VolunteerApplication.Contact_ID).png?w=200" alt="" class="img-thumbnail img-responsive">
+                    <p>&nbsp;</p>
+                </figure>
+            </div>
+            <div class="col-xs-12">
+                <h3>Family Members</h3>
+                @foreach (var item in Model.HouseholdMembers)
+                {
+                    <p>
+                        @item.First_Name @item.Last_Name
+                        <span class="pull-right">
+                            <em>
+                                @if (item.Household_Position_ID != null)
+                                {
+                                    switch (item.Household_Position_ID)
+                                    {
+                                        case 1:
+                                            <span>Head of Household</span>
+                                            break;
+
+                                        case 2:
+                                        <span>Minor Child</span>
+                                            break;
+
+                                        case 3:
+                                        <span>Other Child</span>
+                                            break;
+
+                                        case 4:
+                                        <span>Adult Child</span>
+                                            break;
+
+                                        case 5:
+                                        <span>Guest Child</span>
+                                            break;
+
+                                        case 6:
+                                        <span>Company</span>
+                                            break;
+
+                                        default:
+                                        @Model.VolunteerApplication.VolunteerStatus.MQ_Status
+                                            break;
+                                    }
+                                }
+                            </em>
+                        </span>
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>

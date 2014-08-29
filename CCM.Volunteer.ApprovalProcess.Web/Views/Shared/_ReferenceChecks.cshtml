@@ -1,0 +1,129 @@
+﻿@using CCM.Volunteer.ApprovalProcess.Core.Models;
+@using CCM.Volunteer.ApprovalProcess.Core.ViewModels;
+@using System.Linq;
+@using Nancy;
+
+@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<RedFlagViewModel>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="well">
+            <h2>Reference Checks</h2>
+            <div class="row referenceCheck">
+                @if (Model.VolunteerApplication.ReferenceList.Count() < 1)
+                {
+                    <div class="col-lg-6">
+                        <h3>There are no references for this application</h3>
+                    </div>
+                }
+
+                @foreach (var item in Model.VolunteerApplication.ReferenceList)
+                {
+                    if (item.Date_Completed.HasValue)
+                    {
+                        <div class="panel panel-default">
+                            <div class="offer offer-success">
+                                <div class="shape">
+                                    <div class="shape-text">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    </div>
+                                </div>
+                                <div class="offer-content">
+                                    <h3 class="lead">
+                                        @if (item.ReferenceInfo != null)
+                                        {
+                                            <img src="@(item.ReferenceInfo.DefaultImageUrl + ".png?w=50&h=50")" class="pull-left" />
+                                        }
+                                        @item.Name
+                                        <div class="small lead">Responded <span class="timeago" title="@(item.Date_Completed.Value.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'"))"></span></div>
+                                    </h3>
+                                    @if (!Html.RenderContext.Context.Request.Url.Path.Contains("red-flag"))
+                                    {
+                                        @if (!string.IsNullOrEmpty(item.Phone))
+                                        {
+                                            <a href="tel:@item.Phone" class="btn btn-gray">
+                                                @{
+
+                                                }
+                                                <span class="glyphicon glyphicon-earphone"></span>&nbsp;@string.Format("{0:(###) ###-####}", long.Parse(item.Phone.Replace("-", "").Replace(" ", "").Replace(".", "").Replace("—", "").Replace("(", "").Replace(")","")))
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <p><strong><span class="glyphicon glyphicon-earphone"></span></strong> <small><em>No phone number available</em></small></p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(item.Email))
+                                        {
+                                            <a href="mailto:@item.Email" class="btn btn-gray">
+                                                <span class="glyphicon glyphicon-envelope"></span>&nbsp;@item.Email
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <p><strong><span class="glyphicon glyphicon-envelope"></span></strong> <small><em>No email address available</em></small></p>
+                                        }
+                                    }
+
+                                    <p><strong>How well do you know? </strong><br />@item.How_Well_Know</p>
+                                    <p><strong>Do you recommend? </strong><br />@item.Do_You_Recommend</p>
+                                    <p><strong>Recommend with kids </strong><br />@item.Recommend_With_Kids</p>
+                                    <p><strong>Notes</strong><br />@Html.Raw(item.Notes)</p>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                    else
+                    {
+                        <div class="panel panel-default">
+                            <div class="offer offer-info">
+                                <div class="shape">
+                                    <div class="shape-text">
+                                        <span class="glyphicon glyphicon-exclamation-sign"></span>
+                                    </div>
+                                </div>
+                                <div class="offer-content">
+                                    <h3 class="lead">
+                                        @if (item.ReferenceInfo != null)
+                                        {
+                                            <img data-original="@(item.ReferenceInfo.DefaultImageUrl + ".png?w=50&h=50")" width="50" height="50" class="pull-left lazy" />
+                                        }
+                                        @item.Name
+                                    </h3>
+                                    @if (!Html.RenderContext.Context.Request.Url.Path.Contains("red-flag"))
+                                    {
+                                        @if (!string.IsNullOrEmpty(item.Phone))
+                                        {
+                                            <a href="tel:@item.Phone" class="btn btn-gray">
+                                                <span class="glyphicon glyphicon-earphone"></span>&nbsp;@string.Format("{0:(###) ###-####}", long.Parse(item.Phone.Replace("-", "").Replace(" ", "").Replace(".", "").Replace("—", "").Replace("(", "").Replace(")", "")))
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <p><strong><span class="glyphicon glyphicon-earphone"></span></strong> <small><em>No phone number available</em></small></p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(item.Email))
+                                        {
+                                            <a href="mailto:@item.Email" class="btn btn-gray">
+                                                <span class="glyphicon glyphicon-envelope"></span>&nbsp;@item.Email
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <p><strong><span class="glyphicon glyphicon-envelope"></span></strong> <small><em>No email adderess available</em></small></p>
+                                        }
+                                    }
+                                    <p><em>This reference has not responded</em></p>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
